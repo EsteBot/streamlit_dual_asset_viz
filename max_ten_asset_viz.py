@@ -124,7 +124,7 @@ if st.session_state.tickers:
         analysis_button = st.button("Perform Graphical Analysis")
 
     with col_list[3]:
-        st.title("Ticker Id Ref. Table")
+        st.title("Ticker Id Ref.")
         st.write("50 top tickers of the S&P 500 Index")
         st.dataframe(ticker_symbol_data)
     

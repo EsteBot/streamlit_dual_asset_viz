@@ -39,6 +39,30 @@ st.markdown("<h3 class='center'>- All stock analysis done with data from Yahoo F
 
 st.markdown("<h1 class='center'> </h1>", unsafe_allow_html=True)
 
+ticker_symbol_data = {
+    "Company Name": ["Apple", "NVIDIA", "Microsoft", "Alphabet", "Amazon", 
+                     "Meta Platforms", "Berkshire Hathaway", "Broadcom", "Tesla", "Eli Lilly", 
+                     "Walmart", "JPMorgan Chase", "Visa", "Exxon Mobil", "United Health", 
+                     "Oracle", "Mastercard", "Procter & Gamble", "Costco", "Home Depot", 
+                     "Johnson & Johnson", "AbbVie", "Bank of America", "Netflix", "Salesforce", 
+                     "Coca-Cola", "Chevron", "Advanced Micro Devices", "Merck", "T-Mobile", 
+                     "PepsiCo", "Accenture", "Linde", "Cisco Systems", "Wells Fargo", 
+                     "Adobe", "McDonald's", "Thermo Fisher Scientific", "Philip Morris", "Abbott Laboratories", 
+                     "ServiceNow", "QUALCOMM", "International Business Machines", "Texas Instruments", "Morgan Stanley", 
+                     "American Express", "General Electric", "Caterpillar", "Intuitive Surgical", "Danaher"],
+    "Ticker Symbol": ["AAPL", "NVDA", "MSFT", "GOOGL", "AMZN",
+                      "META", "BRK.B", "AVGO", "TSLA", "LLY",
+                      "WMT", "JPM", "V", "XOM", "UNH",
+                      "ORCL", "MA", "PG", "COST", "HD",
+                      "JNJ", "ABBV", "BAC", "NFLX", "CRM",
+                      "KO", "CVX", "AMD", "MRK", "TMUS",
+                      "PEP", "ACN", "LIN", "CSCO", "WFC",
+                      "ADBE", "MCD", "TMO", "PM", "ABT",
+                      "NOW", "QCOM", "IBM", "TXN", "MS",
+                      "AXP", "GE", "CAT", "ISRG", "DHR",
+                      ]
+}
+
 # Fetch stock data
 def get_stock_data(ticker, start_date, end_date):
     stock = yf.Ticker(ticker)
@@ -99,6 +123,10 @@ if st.session_state.tickers:
         st.write("")
         analysis_button = st.button("Perform Graphical Analysis")
 
+    with col_list[3]:
+        st.title("Ticker Id Ref. Table")
+        st.write("50 top tickers of the S&P 500 Index")
+        st.dataframe(ticker_symbol_data)
     
     if analysis_button:
 

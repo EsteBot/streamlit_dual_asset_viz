@@ -169,7 +169,7 @@ if st.session_state.tickers:
                         st.metric(
                             label=f"Start: {start_price} | End: {end_price}",
                             value=f"{ticker}",
-                            delta=price_difference
+                            delta=f"${price_difference}"
                         )
 
 
@@ -219,7 +219,7 @@ if st.session_state.tickers:
                         st.metric(
                             label=f"Start: {start_price} | End: {end_price}",
                             value=f"{ticker}",
-                            delta=percent_change
+                            delta=f"{percent_change}%"
                         )
 
 ####### Logic for Risk vs Return Display #######

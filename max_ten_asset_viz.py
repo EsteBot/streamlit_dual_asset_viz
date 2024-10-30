@@ -50,8 +50,9 @@ ticker_symbol_data = {
                      "Adobe", "McDonald's", "Thermo Fisher Scientific", "Philip Morris", "Abbott Laboratories", 
                      "ServiceNow", "QUALCOMM", "International Business Machines", "Texas Instruments", "Morgan Stanley", 
                      "American Express", "General Electric", "Caterpillar", "Intuitive Surgical", "Danaher"],
+
     "Ticker Symbol": ["AAPL", "NVDA", "MSFT", "GOOGL", "AMZN",
-                      "META", "BRK.B", "AVGO", "TSLA", "LLY",
+                      "META", "BRK-B", "AVGO", "TSLA", "LLY",
                       "WMT", "JPM", "V", "XOM", "UNH",
                       "ORCL", "MA", "PG", "COST", "HD",
                       "JNJ", "ABBV", "BAC", "NFLX", "CRM",
@@ -124,7 +125,7 @@ if st.session_state.tickers:
         analysis_button = st.button("Perform Graphical Analysis")
 
     with col_list[3]:
-        st.title("Ticker Id Ref.")
+        st.title("Ticker Id Ref")
         st.write("50 top tickers of the S&P 500 Index")
         st.dataframe(ticker_symbol_data)
     
@@ -147,36 +148,44 @@ if st.session_state.tickers:
                 fig.add_trace(go.Scatter(x=df.index, y=df['Close'], mode='lines', name=ticker))
 
         # Display the plot
-        fig.update_layout(title="Stock Prices by Close Price", xaxis_title="Date", yaxis_title="USD")
+        fig.update_layout(title="Stock Value as Close Price", xaxis_title="Date", yaxis_title="USD")
         st.plotly_chart(fig)
 
         # Create a new container for metrics display below the plot
-        metric_col_list = st.columns(len(st.session_state.tickers))  # Create columns based on number of tickers
         metrics_container = st.container()
 
-        for met_index, ticker in enumerate(st.session_state.tickers):
-            if ticker:  # Ensure ticker input isn't empty
-                stock_data = get_stock_data(ticker, start_date, end_date)
+        # Maximum number of columns per row
+        max_columns_per_row = 5
 
-                # Round and extract values for metrics
-                start_price = round(stock_data['start_price'], 2)
-                end_price = round(stock_data['end_price'], 2)
-                price_difference = round(stock_data['price_difference'], 2)
+        # Iterate through the tickers and group them into rows
+        for i in range(0, len(st.session_state.tickers), max_columns_per_row):
+            row_tickers = st.session_state.tickers[i:i + max_columns_per_row]
+            
+            # Create a new row with columns for the tickers in this group
+            metric_col_list = st.columns(len(row_tickers))
+            
+            for met_index, ticker in enumerate(row_tickers):
+                if ticker:  # Ensure ticker input isn't empty
+                    stock_data = get_stock_data(ticker, start_date, end_date)
 
-                # Display metrics in columns below the plot
-                with metrics_container:
-                    with metric_col_list[met_index]:  # Use met_index for correct column
-                        st.metric(
-                            label=f"Start: {start_price} | End: {end_price}",
-                            value=f"{ticker}",
-                            delta=f"${price_difference}"
-                        )
+                    # Round and extract values for metrics
+                    start_price = round(stock_data['start_price'], 2)
+                    end_price = round(stock_data['end_price'], 2)
+                    price_difference = round(stock_data['price_difference'], 2)
 
+                    # Display metrics in the appropriate column
+                    with metrics_container:
+                        with metric_col_list[met_index]:
+                            st.metric(
+                                label=f"Start: {start_price} | End: {end_price}",
+                                value=f"{ticker}",
+                                delta=f"${price_difference}"
+                            )
 
 ####### Logic for Total Percent Change Display #######
 
         st.title("")
-        st.markdown("<h3 class='center'>-Equalizing Initial Value: Analysis of Total Percent Change</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 class='center'>- Equalizing Initial Value: Analysis of Total Percent Change</h3>", unsafe_allow_html=True)
 
         # Initialize plot
         fig = go.Figure()
@@ -194,38 +203,47 @@ if st.session_state.tickers:
                     )
 
         # Display the plot
-        fig.update_layout(title="Total Percent Change",
+        fig.update_layout(title="Stock Value as Total Percent Change",
                         xaxis_title="Date", 
                         yaxis_title="USD"
                         )
         st.plotly_chart(fig)
 
         # Create a new container for metrics display below the plot
-        metric_col_list = st.columns(len(st.session_state.tickers))  # Create columns based on number of tickers
         metrics_container = st.container()
 
-        for met_index, ticker in enumerate(st.session_state.tickers):
-            if ticker:  # Ensure ticker input isn't empty
-                stock_data = get_stock_data(ticker, start_date, end_date)
+        # Maximum number of columns per row
+        max_columns_per_row = 5
 
-                # Round and extract values for metrics
-                start_price = round(stock_data['start_price'], 2)
-                end_price = round(stock_data['end_price'], 2)
-                percent_change = round((end_price - start_price) / start_price * 100, 2)
+        # Iterate through the tickers and group them into rows
+        for i in range(0, len(st.session_state.tickers), max_columns_per_row):
+            row_tickers = st.session_state.tickers[i:i + max_columns_per_row]
+            
+            # Create a new row with columns for the tickers in this group
+            metric_col_list = st.columns(len(row_tickers))
 
-               # Display metrics in columns below the plot
-                with metrics_container:
-                    with metric_col_list[met_index]:  # Use met_index for correct column
-                        st.metric(
-                            label=f"Start: {start_price} | End: {end_price}",
-                            value=f"{ticker}",
-                            delta=f"{percent_change}%"
-                        )
+            for met_index, ticker in enumerate(row_tickers):
+                if ticker:  # Ensure ticker input isn't empty
+                    stock_data = get_stock_data(ticker, start_date, end_date)
+
+                    # Round and extract values for metrics
+                    start_price = round(stock_data['start_price'], 2)
+                    end_price = round(stock_data['end_price'], 2)
+                    percent_change = round((end_price - start_price) / start_price * 100, 2)
+
+                # Display metrics in columns below the plot
+                    with metrics_container:
+                        with metric_col_list[met_index]:  # Use met_index for correct column
+                            st.metric(
+                                label=f"Start: {start_price} | End: {end_price}",
+                                value=f"{ticker}",
+                                delta=f"{percent_change}%"
+                            )
 
 ####### Logic for Risk vs Return Display #######
 
         st.title("")
-        st.markdown("<h3 class='center'>-To quantify risk, using pct returns, compare expected return with std of daily return</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 class='center'>- To quantify risk, using pct returns, compare expected return with std of daily return</h3>", unsafe_allow_html=True)
 
         # Initialize plot
         fig = go.Figure()
@@ -254,7 +272,11 @@ if st.session_state.tickers:
                     x=expected_return, 
                     y=risk, 
                     mode='markers', 
-                    marker=dict(size=area, color='lightpink', opacity=0.6),
+                    marker=dict(size=area, 
+                                color=expected_return * risk, 
+                                colorscale='Blues',
+                                opacity=1,
+                                ),
                     text=rets.columns,  # Hover text (stock labels)
                     hovertemplate='<b>%{text}</b><br>Expected Return: %{x:.4f}<br>Risk (Std Dev): %{y:.4f}<extra></extra>'
                 ))
@@ -289,26 +311,35 @@ if st.session_state.tickers:
         st.plotly_chart(fig)
 
         # Create a new container for metrics display below the plot
-        metric_col_list = st.columns(len(st.session_state.tickers))  # Create columns based on number of tickers
         metrics_container = st.container()
 
-        for met_index, ticker in enumerate(st.session_state.tickers):
-            if ticker:  # Ensure ticker input isn't empty
+        # Maximum number of columns per row
+        max_columns_per_row = 5
 
-                # Calculate expected return (mean) and risk (standard deviation)
-                expected_return = rets.mean().iloc[0]  # Use iloc to access the first position
-                risk = rets.std().iloc[0]  # Use iloc to access the first position
+        # Iterate through the tickers and group them into rows
+        for i in range(0, len(st.session_state.tickers), max_columns_per_row):
+            row_tickers = st.session_state.tickers[i:i + max_columns_per_row]
+            
+            # Create a new row with columns for the tickers in this group
+            metric_col_list = st.columns(len(row_tickers))
 
-                # Round the values for display
-                expected_return = round(expected_return * 100, 2)  # Percent format
-                risk = round(risk * 100, 2)  # Percent format
+            for met_index, ticker in enumerate(row_tickers):
+                if ticker:  # Ensure ticker input isn't empty
 
-                # Display metrics
-                with metrics_container:
-                    with metric_col_list[met_index]:  # Use met_index for correct column
-                        st.metric(
-                            label=f'Expected Return {expected_return}%',
-                            value=f"{ticker}",
-                            delta=f"Risk (Std): {risk}%",
-                            delta_color="inverse"  # Optional: inverse delta color for up/down
-                        )
+                    # Calculate expected return (mean) and risk (standard deviation)
+                    expected_return = rets.mean().iloc[0]  # Use iloc to access the first position
+                    risk = rets.std().iloc[0]  # Use iloc to access the first position
+
+                    # Round the values for display
+                    expected_return = round(expected_return * 100, 2)  # Percent format
+                    risk = round(risk * 100, 2)  # Percent format
+
+                    # Display metrics
+                    with metrics_container:
+                        with metric_col_list[met_index]:  # Use met_index for correct column
+                            st.metric(
+                                label=f'Expected Return {expected_return}%',
+                                value=f"{ticker}",
+                                delta=f"Risk (Std): {risk}%",
+                                delta_color="inverse"  # Optional: inverse delta color for up/down
+                            )
